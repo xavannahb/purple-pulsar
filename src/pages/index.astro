@@ -1,17 +1,33 @@
 ---
-
+// IMPORTEERD DE HEADER EN HORECASTADSDELEN COMPONENTEN
+import Header from "../components/header.astro";
+import Horecastadsdelen from "../components/template-horeca.astro";
 ---
 
-<html lang="en">
-	<head>
+<html lang="nl">
+  	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Amsterdam Horeca</title>
+		<link rel="stylesheet" href="/public/styling/style-extra.css"/>
 	</head>
 	<body>
-		<h1>Astro</h1>
-	</body>
+		<Header />
+		<section class="hero">
+			<div class="hero-content">
+				<div class="hero-left">
+					<div class="location-tag"><div class="location-dot"></div>Zoek per stadsdeel</div>
+					<h2 class="hero-title">Opzoek naar een cafe,<br>bekijk ze hier!</h2>
+					<p class="hero-sub">47 Geopend · zojuist bijgewerkt</p>
+				</div>
+				<div class="search-wrap">
+					<div class="search-bar"> Cuisine, neighbourhood…</div>
+      			</div>
+			</div>
+		</section>
+		<Horecastadsdelen/>
+	</body>	
+	<script>
+	</script>
 </html>
+

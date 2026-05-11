@@ -1,0 +1,58 @@
+---
+// @ts-nocheck | zet typescript checks uit voor dit bestand
+
+// HAALT DE DATA OP VAN DE API VAN AMSTERDAM
+const res = await fetch( // doet een HTTP request naar de API van Amsterdam | = await wacht tot de data binnen is om vervolgens fetch response op te slaan in de response
+  "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200",
+  {
+    headers: {
+      Accept: "application/hal+json", // = speciaal JSON format ?? 
+    },
+  }
+);
+
+const data = await res.json(); // zet de response om naar een JavaScript object
+const horecas = data._embedded?.exploitatievergunning ?? []; // haalt de array met horeca eruit | data._embedded - zit in de API response | ?. - voorkomt crash als het niet bestaat | ?? [] - fallback = lege array
+
+// BEPAALD HET STADSDEEL OP BASIS VAN DE POSTCODE 
+function getStadsdeel(postcode) { // functie die op basis van postcode bepaalt in welk stadsdeel iets ligt
+  const pc = postcode?.slice(0, 4); // pak alleen de eerste 4 cijfers van postcode
+
+  if (!pc) return "Onbekend"; // als postcode leeg is - return "Onbekend"
+
+  // checked of postcode binnen range valt
+  if (pc >= "1011" && pc <= "1018") return "Centrum";
+  if (pc >= "1020" && pc <= "1039") return "Noord";
+  if (pc >= "1040" && pc <= "1069") return "West";
+  if (pc >= "1070" && pc <= "1083") return "Zuid";
+  if (pc >= "1090" && pc <= "1098") return "Oost";
+  if (pc >= "1100" && pc <= "1109") return "Zuidoost";
+
+  return "Overig"; // als geen match - fallback
+}
+
+horecas.map(horeca => {
+    horeca.stadsdeel = getStadsdeel(horeca.postcode);
+});
+
+const stadsdelen = Object.groupBy(horecas, (horeca) => horeca.stadsdeel); // groepeert alle horeca per stadsdeel
+console.log(stadsdelen);
+// Bron: samen met jad gemaakt 
+---
+<main class="main-content">
+    <h2>Per stadsdeel</h2>
+      <section class="cards">
+        {Object.entries(stadsdelen).map(([stadsdeel, items]) => ( // Per stadsdeel: naam tonen, aantal items tonen
+          <a href={`/stadsdeel/${stadsdeel.toLowerCase()}`}>
+              <div class="card">
+              <h2>{stadsdeel}</h2>
+              <p class="open-now">{items.length} open now</p>
+              </div>
+              </a>
+                ))}
+      </section>
+</main>
+
+<script define:vars={{ stadsdelen }}> // define:vars - maakt server data beschikbaar in client
+    console.log(stadsdelen)
+</script>

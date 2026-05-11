@@ -1,0 +1,59 @@
+---
+// @ts-nocheck | zet typescript checks uit voor dit bestand
+const weatherRes = await fetch(
+  "https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.8897&hourly=temperature_2m&forecast_days=1"
+);
+
+const weatherData = await weatherRes.json(); 
+
+// Pak huidige uur 
+const currentHour = new Date().getHours();
+const currentTemp = weatherData.hourly.temperature_2m[currentHour];
+---
+
+<header>
+    <nav>
+        <span class="logo">Amsterdam Horeca</span>
+        <div class="header-buttons">
+            <p>☁️ {currentTemp}°C Amsterdam </p>
+
+            <div class="saved-container">
+                <button class="saved" id="savedButton">
+                    🍴 Saved (3)
+                </button>
+
+                <div class="saved-dropdown" id="savedDropdown">
+                    <p class="empty">Nog niks opgeslagen</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+    // @ts-nocheck | zet typescript checks uit voor dit bestand
+    const button = document.getElementById("savedButton"); // haalt de button op uit de HTML
+    const dropdown = document.getElementById("savedDropdown"); // haalt de dropdown op uit de HTML
+
+    const saved = JSON.parse(localStorage.getItem("saved")) ?? []; // haal saved IDs op uit localStorage van Saved | JSON.parse - zet string terug om naar array | ?? [] - fallback = lege array
+
+    button.addEventListener("click", () => { // wanneer iemand op de de button klikt 
+        dropdown.classList.toggle("open"); // toggle - voegt class toe als die er niet is, verwijdert als die er wel is
+    });
+
+    document.addEventListener("click", (e) => { // wanneer er ergens op de pagina wordt geklikt
+        if (!button.contains(e.target) && !dropdown.contains(e.target)) { // checkt of de klik niet op de button of dropdown zelf was
+        dropdown.classList.remove("open"); // als dat het geval is, sluit de dropdown door de "open" class te verwijderen
+        }
+    });
+
+    if (saved.length === 0) {  // checkt of je niks hebt opgeslagen - saved.length - geeft aantal items in array | === 0 - checkt of dat 0 is
+        dropdown.innerHTML = "<p>Geen opgeslagen plekken</p>"; // fallback als er niks is opgeslagen 
+    } else { // als er wél opgeslagen horeca’s zijn, loop dan door de saved array en maak een link voor elke opgeslagen zaak
+        dropdown.innerHTML = saved.map(id => `
+        <a href="/cafe/${id}">
+            🍽️ ${id}
+        </a>
+        `).join(""); // join("") plakt alle strings in de array aan elkaar tot 1 string zonder spaties ertussen
+    }
+</script>
