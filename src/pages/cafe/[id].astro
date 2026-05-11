@@ -2,65 +2,71 @@
 // @ts-nocheck | zet typescript checks uit voor dit bestand
 
 export async function getStaticPaths() { // geeft aan voor welke urls deze pagina gegenereerd moet worden
-  const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200", {
-    headers: { Accept: "application/hal+json" },
-  });
+    const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200", {
+        headers: { Accept: "application/hal+json" },
+    });
 
-  const data = await res.json();
-  const horecas = data._embedded?.exploitatievergunning ?? [];
+    const data = await res.json();
+    const horecas = data._embedded?.exploitatievergunning ?? [];
 
-  return horecas
-    .filter((horeca) => horeca.zaaknummer) // Alleen items met een zaaknummer worden gebruikt 
-    .map((horeca) => ({
-      params: {
-        id: horeca.zaaknummer.toString(), //filtert de array zodat alleen items met een zaaknummer overblijven en maakt er een id van voor de URL, bijvoorbeeld /cafe/12345
-      },
-    }));
+    return horecas
+        .filter((horeca) => horeca.zaaknummer) // Alleen items met een zaaknummer worden gebruikt 
+        .map((horeca) => ({
+        params: {
+            id: horeca.zaaknummer.toString(), //filtert de array zodat alleen items met een zaaknummer overblijven en maakt er een id van voor de URL, bijvoorbeeld /cafe/12345
+        },
+        }));
 }
 
 const { id } = Astro.params;
 
 const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200", {
-  headers: { Accept: "application/hal+json" },
+    headers: { Accept: "application/hal+json" },
 });
 
 const data = await res.json();
 const horecas = data._embedded?.exploitatievergunning ?? [];
 
 const cafe = horecas.find(
-  (h) => h.zaaknummer?.toString() === id
+    (h) => h.zaaknummer?.toString() === id
 );
 
 import Header from "/src/components/header.astro";
 ---
 
 <html lang="nl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Amsterdam Horeca Finder</title>
-	<link rel="stylesheet" href="/public/styling/style-extra.css"/>
-  </head>
-  <body>
-	<Header />
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<title>Horeca</title>
+	<link rel="stylesheet" href="/public/styling/main.css"/>
+	<link rel="stylesheet" href="/public/styling/cafe.css"/>
+</head>
+<body>
+    <Header />
+    <section class="stadsdeel-hero">
+        <div class="stadsdeel-hero-inner">
+            <div>
+            <a href="/" class="hero-back">← Terug naar overzicht</a>
+            <h1 class="hero-title">{cafe?.zaaknaam}</h1>
+            <p class="hero-sub">open tot blabla</p>
+            </div>
+            <!-- <div class="hero-icon">{icon}</div> -->
+        </div>
+    </section>
     <main class="main-content">
         <section class="cards-container">
-          <div class="card">
-          	<h2>{cafe?.zaaknaam}</h2>
-              {cafe ? (
-            <>
-                <p><strong>Adres:</strong> {cafe.adres}</p>
-                <p><strong>Postcode:</strong> {cafe.postcode}</p>
-            </>
-            ) : (
-            <p>Café niet gevonden</p>
-            )}
-          </div>
-        </section>
+            <div class="card">
+                {cafe ? (
+                <>
+                    <p><strong>Adres:</strong> {cafe.adres}</p>
+                    <p><strong>Postcode:</strong> {cafe.postcode}</p>
+                </>
+                ) : (
+                <p>Café niet gevonden</p>
+                )}
+            </div>
+            </section>
     </main>
 </body>
-
-<script>
-
-</script>
 </html>

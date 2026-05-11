@@ -22,130 +22,142 @@ const { stadsdeel } = Astro.params; // haalt de waarde van stadsdeel uit de URL
 
 // HAALT DE DATA OP VAN DE API VAN AMSTERDAM
 const res = await fetch(
-  "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200",
-  {
-    headers: {
-      Accept: "application/hal+json",
-    },
-  }
+    "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200",
+    {
+        headers: {
+        Accept: "application/hal+json",
+        },
+    }
 );
 
 const data = await res.json();
 const horecas = data._embedded?.exploitatievergunning ?? [];
 
 function getStadsdeel(postcode) {
-  const pc = postcode?.slice(0, 4);
-  if (!pc) return "Onbekend";
+    const pc = postcode?.slice(0, 4);
+    if (!pc) return "Onbekend";
 
-  if (pc >= "1011" && pc <= "1018") return "centrum";
-  if (pc >= "1020" && pc <= "1039") return "noord";
-  if (pc >= "1040" && pc <= "1069") return "west";
-  if (pc >= "1070" && pc <= "1083") return "zuid";
-  if (pc >= "1090" && pc <= "1098") return "oost";
-  if (pc >= "1100" && pc <= "1109") return "zuidoost";
+    if (pc >= "1011" && pc <= "1018") return "centrum";
+    if (pc >= "1020" && pc <= "1039") return "noord";
+    if (pc >= "1040" && pc <= "1069") return "west";
+    if (pc >= "1070" && pc <= "1083") return "zuid";
+    if (pc >= "1090" && pc <= "1098") return "oost";
+    if (pc >= "1100" && pc <= "1109") return "zuidoost";
 
-  return "overig";
+    return "overig";
 }
+
+const STADSDEEL_ICONS = {
+    centrum:  "🏛️",
+    noord:    "🌿",
+    west:     "🌇",
+    zuid:     "🏡",
+    oost:     "🌅",
+    zuidoost: "🏙️",
+    overig:   "📍",
+};
 
 // HAALT STADSDEEL OP UIT URL
 const filtered = horecas.filter(
-  (horeca) => getStadsdeel(horeca.postcode) === stadsdeel
+    (horeca) => getStadsdeel(horeca.postcode) === stadsdeel
 );
 
 // === BRON: Claude "hoe maak ik van een string met kleine letters een string met hoofdletters in javascript?" ===
 
 const stadsnaam = stadsdeel.charAt(0).toUpperCase() + stadsdeel.slice(1); // maakt van "centrum" -> "Centrum" | 
+const icon = STADSDEEL_ICONS[stadsdeel] ?? "📍";
 
 import Header from "/src/components/header.astro";
 ---
 
 <html lang="nl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Amsterdam Horeca Finder</title>
-	<link rel="stylesheet" href="/public/styling/style-extra.css"/>
-  </head>
-  <body>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<title>{stadsnaam} Horeca</title>
+	<link rel="stylesheet" href="/public/styling/main.css"/>
+	<link rel="stylesheet" href="/public/styling/stadsdeel.css"/>
+</head>
+<body>
 	<Header />
+    <section class="stadsdeel-hero">
+        <div class="stadsdeel-hero-inner">
+            <div>
+            <a href="/" class="hero-back">← Terug naar overzicht</a>
+            <h1 class="hero-title">{stadsnaam}</h1>
+            <p class="hero-sub">{filtered.length} locaties gevonden</p>
+            </div>
+            <div class="hero-icon">{icon}</div>
+        </div>
+    </section>
     <main class="main-content">
-        <section class="cards-container">
-          	<h1>Nu open in {stadsnaam}</h1>
-        {filtered.length > 0 ? (
-            filtered.map((horeca) => (
-              <div class="card">
-                
-                <a href={`/cafe/${horeca.zaaknummer}`}>
-                  <h2>{horeca.zaaknaam}</h2>
-
-                  <div class="card-details"> 
-                    <p>{horeca.zaakSpecificatie}</p>
-
-                    {
-                      horeca.terrasgeometrie &&
-                      Object.keys(horeca.terrasgeometrie).length > 0 && (
-                        <p class="terras">Terras</p>
-                      )
-                    }
-                  </div>
-
-                  <p><strong>Adres:</strong> {horeca.adres}</p>
-                  <p><strong>Postcode:</strong> {horeca.postcode}</p>
-                </a>
-
-                <button 
-                  class="save-btn" 
-                  data-id={horeca.zaaknummer}
-                  type="button"
-                >
-                  🤍
-                </button>
-
-              </div>
-            ))
-        ) : (
-            <p>Geen horeca gevonden</p>
-        )}
-       
+        <section class="cards">
+                {filtered.length > 0 ? (
+                    filtered.map((horeca) => (
+                    <div class="card">
+                        <a href={`/cafe/${horeca.zaaknummer}`}>
+                            <div class="card-top">
+                                <div class="card-thumb">🍽️</div>
+                                <button class="save-btn" data-id={horeca.zaaknummer} type="button">🤍</button>
+                            </div>
+                            <p class="card-name">{horeca.zaaknaam}</p>
+                            <p class="card-meta">{horeca.adres} · {horeca.postcode}</p>
+                            <div class="card-footer">
+                                {horeca.zaakSpecificatie && (
+                                    <span class="pill pill-type">{horeca.zaakSpecificatie}</span>
+                                )}
+                                {horeca.terrasgeometrie &&
+                                    Object.keys(horeca.terrasgeometrie).length > 0 && (
+                                    <span class="pill pill-tag">Terras</span>
+                                    )}
+                            </div>
+                        </a>
+                    </div>
+                    ))
+                ) : (
+                    <div class="empty-state">
+                        <p>🍽️</p>
+                        <p>Geen locaties gevonden in {stadsnaam}</p>
+                    </div>
+                )}
         </section>
-        </main>
-
-    </body>
-    <script>
-      // @ts-nocheck | zet typescript checks uit voor dit bestand
+    </main>
+</body>	
+<script>
+    // @ts-nocheck | zet typescript checks uit voor dit bestand
     
     const buttons = document.querySelectorAll<HTMLButtonElement>(".save-btn"); // pakt alle buttons met class "save-btn" uit de HTML en geeft aan dat het HTMLButtonElements zijn
 
     buttons.forEach((button) => { // loop door alle buttons heen
-      const id = button.dataset.id; // haalt de data-id op van de button, dit is de zaaknummer van het cafe dat je wilt opslaan
-      if (!id) return; // als er geen id is, stop dan met deze iteratie van de loop
+        const id = button.dataset.id; // haalt de data-id op van de button, dit is de zaaknummer van het cafe dat je wilt opslaan
+        if (!id) return; // als er geen id is, stop dan met deze iteratie van de loop
 
-      // Lees opgeslagen lijst één keer per knop
-      const saved: string[] = JSON.parse(localStorage.getItem("saved") ?? "[]"); // haalt de saved lijst op uit localStorage | JSON.parse - zet string terug om naar array | ?? "[]" - fallback = lege array als er niks is opgeslagen
+        // Lees opgeslagen lijst één keer per knop
+        const saved: string[] = JSON.parse(localStorage.getItem("saved") ?? "[]"); // haalt de saved lijst op uit localStorage | JSON.parse - zet string terug om naar array | ?? "[]" - fallback = lege array als er niks is opgeslagen
 
-      if (saved.includes(id)) { // checkt of de id van deze button al in de saved lijst zit
-        button.textContent = "❤️"; // als dat het geval is, verander de button naar een gevuld hartje
-        button.setAttribute("aria-label", "Verwijder uit opgeslagen"); // en verander de aria-label zodat screen readers weten dat deze knop nu bedoeld is om te verwijderen uit opgeslagen
-      }
-
-      button.addEventListener("click", (event) => { // wanneer er op de button wordt geklikt
-        event.preventDefault(); // voorkomt dat de pagina herlaadt als gevolg van de klik op de button, omdat deze binnen een link zit
-        event.stopPropagation(); // voorkomt dat de klik op de button ook de klik op de link eromheen triggert, zodat je niet per ongeluk naar de cafe pagina gaat als je alleen maar wilt opslaan of verwijderen uit opgeslagen
-
-        const updated: string[] = JSON.parse(localStorage.getItem("saved") ?? "[]"); // haal de saved lijst opnieuw op, omdat deze kan zijn veranderd sinds de pagina is geladen
-
-        if (updated.includes(id)) { // checkt opnieuw of de id al in de saved lijst zit, omdat deze kan zijn veranderd sinds de pagina is geladen
-          const nieuw = updated.filter((item) => item !== id); // maak een nieuwe lijst aan zonder de id die we willen verwijderen | filter - maakt een nieuwe array met alle items waarvoor de functie true teruggeeft | item !== id - geeft true terug voor alle items die niet gelijk zijn aan de id die we willen verwijderen
-          localStorage.setItem("saved", JSON.stringify(nieuw)); // sla de nieuwe lijst op in localStorage zonder de id die we willen verwijderen
-          button.textContent = "🤍"; 
-          button.setAttribute("aria-label", "Bewaar dit café"); // verander de aria-label terug naar "Bewaar dit café" zodat screen readers weten dat deze knop nu bedoeld is om toe te voegen aan opgeslagen
-        } else { 
-          updated.push(id); // voeg de id toe aan de lijst van opgeslagen items
-          localStorage.setItem("saved", JSON.stringify(updated)); // voeg de id toe aan de saved lijst en sla deze op in localStorage
-          button.textContent = "❤️"; // verander de button naar een gevuld hartje 
-          button.setAttribute("aria-label", "Verwijder uit opgeslagen"); // en verander de aria-label zodat screen readers weten dat deze knop nu bedoeld is om te verwijderen uit opgeslagen
+        if (saved.includes(id)) { // checkt of de id van deze button al in de saved lijst zit
+            button.textContent = "❤️"; // als dat het geval is, verander de button naar een gevuld hartje
+            button.setAttribute("aria-label", "Verwijder uit opgeslagen"); // en verander de aria-label zodat screen readers weten dat deze knop nu bedoeld is om te verwijderen uit opgeslagen
         }
-      });
+
+        button.addEventListener("click", (event) => { // wanneer er op de button wordt geklikt
+            event.preventDefault(); // voorkomt dat de pagina herlaadt als gevolg van de klik op de button, omdat deze binnen een link zit
+            event.stopPropagation(); // voorkomt dat de klik op de button ook de klik op de link eromheen triggert, zodat je niet per ongeluk naar de cafe pagina gaat als je alleen maar wilt opslaan of verwijderen uit opgeslagen
+
+            const updated: string[] = JSON.parse(localStorage.getItem("saved") ?? "[]"); // haal de saved lijst opnieuw op, omdat deze kan zijn veranderd sinds de pagina is geladen
+
+            if (updated.includes(id)) { // checkt opnieuw of de id al in de saved lijst zit, omdat deze kan zijn veranderd sinds de pagina is geladen
+                const nieuw = updated.filter((item) => item !== id); // maak een nieuwe lijst aan zonder de id die we willen verwijderen | filter - maakt een nieuwe array met alle items waarvoor de functie true teruggeeft | item !== id - geeft true terug voor alle items die niet gelijk zijn aan de id die we willen verwijderen
+                localStorage.setItem("saved", JSON.stringify(nieuw)); // sla de nieuwe lijst op in localStorage zonder de id die we willen verwijderen
+                button.textContent = "🤍"; 
+                button.setAttribute("aria-label", "Bewaar dit café"); // verander de aria-label terug naar "Bewaar dit café" zodat screen readers weten dat deze knop nu bedoeld is om toe te voegen aan opgeslagen
+            } else { 
+                updated.push(id); // voeg de id toe aan de lijst van opgeslagen items
+                localStorage.setItem("saved", JSON.stringify(updated)); // voeg de id toe aan de saved lijst en sla deze op in localStorage
+                button.textContent = "❤️"; // verander de button naar een gevuld hartje 
+                button.setAttribute("aria-label", "Verwijder uit opgeslagen"); // en verander de aria-label zodat screen readers weten dat deze knop nu bedoeld is om te verwijderen uit opgeslagen
+            }
+        });
     });
-    </script>
+</script>
 </html>

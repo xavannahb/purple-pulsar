@@ -53,6 +53,8 @@ Terugkijkend op het project heb ik veel nieuwe dingen geleerd: Astro, API's inla
 
 ### Wat heb ik gedaan?
 
+Ik heb de hele styling aangepast van de site om het beter te maken voor de gebruiker. 
+
 ## Bronvermelding 
 
 - API postcodes onderscheiden 
