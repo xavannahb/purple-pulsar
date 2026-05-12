@@ -5,7 +5,7 @@
 
 // HAALT DE DATA OP VAN DE API VAN AMSTERDAM
 const res = await fetch( // doet een HTTP request naar de API van Amsterdam | = await wacht tot de data binnen is om vervolgens fetch response op te slaan in de response
-    "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200",
+    "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=50",
     {
         headers: {
         Accept: "application/hal+json", // = speciaal JSON format ?? 

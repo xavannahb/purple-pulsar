@@ -1,5 +1,6 @@
 :root {
-    /* hero */
+    /* backgrounds */
+    --background-theme: #faf8f5;
     --hero-gradient: linear-gradient(
         135deg,
         #fff5f0 0%,
@@ -7,28 +8,44 @@
         #faf8f5 100%
     );
 
-    /* text */
+    /* text colors */
     --color-heading: #1d160e;
     --color-subtext: #9a8e7e;
+
+    --color-text: #ffffff;
+    --color-text-muted: #5a4e3c;
     --color-accent: #c2185b;
-    --color-white: #ffffff;
 
     /* surfaces */
     --color-card-bg: #ffffff;
+    --color-surface: #f0ece6;
+
+    /* header */
+    --header-bg: rgba(255, 255, 255, 0.85);
 
     /* borders */
-    --border-light: rgba(0, 0, 0, 0.06);
     --border-card: rgba(0, 0, 0, 0.07);
 
     /* shadows */
     --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
-    --shadow-card-hover:
-        0 4px 12px rgba(0, 0, 0, 0.08),
-        0 12px 32px rgba(0, 0, 0, 0.08);
+    --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 12px 32px rgba(0, 0, 0, 0.08);
+
+    /* gradients */
+    --gradient-primary: linear-gradient( 135deg, #ff6b35, #c2185b);
 
     /* accents */
     --accent-light: #feeaea;
-    --accent-gradient: linear-gradient(135deg, #f04e65, #d42840);
+
+    /* dropdown */
+    --dropdown-bg: rgba(0, 0, 0, 0.8);
+    --dropdown-hover: rgba(255, 255, 255, 0.1);
+
+    /* typography */
+    --font-size-small: 0.8rem;
+    --font-size-header: 1.2rem;
+    --font-size-medium: 1.5rem;
+    --font-size-large: 2.2rem;
+    --font-size-extra-large: 3rem;
 }
 
 /* Hero section */
@@ -51,30 +68,30 @@ section.hero {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: var(--font-size-small);
     font-weight: 600;
     color: var(--color-accent);
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 0.5rem;
 }
 
 .location-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--color-accent);
 }
 
 .hero-title {
     font-family: 'Syne', sans-serif;
-    font-size: 3rem;
+    font-size: var(--font-size-extra-large);
     font-weight: 700;
     color: var(--color-heading);
 }
 
 .hero-sub {
-    font-size: 12px;
+    font-size: var(--font-size-small);
     color: var(--color-subtext);
     margin: 0;
     font-weight: 500;
@@ -88,14 +105,14 @@ section.hero {
 }
 
 .hero-weather-temp {
-    font-size: 2.5rem;
+    font-size: var(--font-size-large);
     font-weight: 800;
     margin: 0.5rem;
     color: var(--color-heading);
 }
 
 .hero-weather-meta {
-    font-size: 0.8rem;
+    font-size: var(--font-size-small);
     font-weight: 600;
     color: var(--color-subtext);
 }
@@ -147,7 +164,7 @@ section.hero {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: var(--font-size-medium);
     margin-bottom: 0.25rem;
 }
 
@@ -157,7 +174,7 @@ section.hero {
 }
 
 .district-meta {
-    font-size: 0.78rem;
+    font-size: var(--font-size-small);
     color: var(--color-subtext);
     font-weight: 500;
     margin: 0;
@@ -169,9 +186,9 @@ section.hero {
     margin-top: auto;
     padding: 0.28rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.7rem;
+    font-size: var(--font-size-small);
     font-weight: 700;
-    background: var(--accent-gradient);
+    background: var(--gradient-primary);
     color: var(--color-white);
     width: fit-content;
 }

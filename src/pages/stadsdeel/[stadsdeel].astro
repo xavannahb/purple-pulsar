@@ -22,7 +22,7 @@ const { stadsdeel } = Astro.params; // haalt de waarde van stadsdeel uit de URL
 
 // HAALT DE DATA OP VAN DE API VAN AMSTERDAM
 const res = await fetch(
-    "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200",
+    "https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=50",
     {
         headers: {
         Accept: "application/hal+json",
@@ -126,6 +126,8 @@ import Header from "/src/components/header.astro";
 <script>
     // @ts-nocheck | zet typescript checks uit voor dit bestand
     
+    // === BRONVERMELDING: Claude - 'Kan je me helpen om deze buttons werkend te krijgen?'===
+    // localStorage van de workshop van Jad geleerd
     const buttons = document.querySelectorAll<HTMLButtonElement>(".save-btn"); // pakt alle buttons met class "save-btn" uit de HTML en geeft aan dat het HTMLButtonElements zijn
 
     buttons.forEach((button) => { // loop door alle buttons heen

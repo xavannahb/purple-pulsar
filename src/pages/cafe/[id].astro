@@ -2,7 +2,7 @@
 // @ts-nocheck | zet typescript checks uit voor dit bestand
 
 export async function getStaticPaths() { // geeft aan voor welke urls deze pagina gegenereerd moet worden
-    const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200", {
+    const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=50", {
         headers: { Accept: "application/hal+json" },
     });
 
@@ -20,7 +20,8 @@ export async function getStaticPaths() { // geeft aan voor welke urls deze pagin
 
 const { id } = Astro.params;
 
-const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=200", {
+// BRON: Claude 
+const res = await fetch("https://api.data.amsterdam.nl/v1/horeca/exploitatievergunning?_format=json&_pageSize=50", {
     headers: { Accept: "application/hal+json" },
 });
 

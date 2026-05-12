@@ -1,8 +1,4 @@
 ---
-// IMPORTEERD DE HEADER EN HORECASTADSDELEN COMPONENTEN
-import Header from "../components/header.astro";
-import Horecastadsdelen from "../components/template-horeca.astro";
-
 const weatherRes = await fetch(
   "https://api.open-meteo.com/v1/forecast?latitude=52.374&longitude=4.8897&hourly=temperature_2m&forecast_days=1"
 );
@@ -12,6 +8,9 @@ const weatherData = await weatherRes.json();
 // Pak huidige uur 
 const currentHour = new Date().getHours();
 const currentTemp = weatherData.hourly.temperature_2m[currentHour];
+
+import Header from "../components/header.astro";
+import Horecastadsdelen from "../components/template-horeca.astro";
 ---
 
 <html lang="nl">
